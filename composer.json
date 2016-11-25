@@ -1,0 +1,28 @@
+{
+    "name": "frobou/frobou-system-permission",
+    "description": "Frobou System Permissions",
+    "type": "library",
+    "homepage": "http://frobou.com.br",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Fabio Pimenta",
+            "email": "blobs@frobou.com.br"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Frobou\\": "src/"
+        }
+    },
+    "config": {
+        "bin-dir": "bin/"
+    },
+    "require": {
+        "php": ">=5.4.0",
+        "frobou/frobou-db-connect": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "*"
+    }
+}
