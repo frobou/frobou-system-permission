@@ -2,6 +2,8 @@
 
 namespace Frobou\SystemPermission;
 
+use Frobou\Validator\FrobouValidation;
+
 class SystemUser
 {
     private $id;
@@ -19,7 +21,7 @@ class SystemUser
     private $can_login;
     private $can_use_web;
     private $can_use_api;
-    private $system_group = [];
+    private $system_group;
     private $system_resources = [];
 
     /**
@@ -98,7 +100,9 @@ class SystemUser
      */
     public function setEmail($email)
     {
-        $this->email = $email;
+        if (FrobouValidation::validateEmail($email)) {
+            $this->email = $email;
+        }
         return $this;
     }
 
@@ -196,7 +200,7 @@ class SystemUser
      */
     public function setActive($active)
     {
-        $this->active = $active;
+        $this->active = intval($active);
         return $this;
     }
 
@@ -214,7 +218,7 @@ class SystemUser
      */
     public function setCanEdit($can_edit)
     {
-        $this->can_edit = $can_edit;
+        $this->can_edit = intval($can_edit);
         return $this;
     }
 
@@ -232,7 +236,7 @@ class SystemUser
      */
     public function setCanLogin($can_login)
     {
-        $this->can_login = $can_login;
+        $this->can_login = intval($can_login);
         return $this;
     }
 
@@ -250,7 +254,7 @@ class SystemUser
      */
     public function setCanUseWeb($can_use_web)
     {
-        $this->can_use_web = $can_use_web;
+        $this->can_use_web = intval($can_use_web);
         return $this;
     }
 
@@ -268,7 +272,7 @@ class SystemUser
      */
     public function setCanUseApi($can_use_api)
     {
-        $this->can_use_api = $can_use_api;
+        $this->can_use_api = intval($can_use_api);
         return $this;
     }
 
@@ -286,7 +290,7 @@ class SystemUser
      */
     public function setSystemGroup($system_group)
     {
-        $this->system_group = $system_group;
+        $this->system_group = intval($system_group);
         return $this;
     }
 
@@ -307,6 +311,5 @@ class SystemUser
         $this->system_resources = $system_resources;
         return $this;
     }
-
 
 }

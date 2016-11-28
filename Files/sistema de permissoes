@@ -1,0 +1,7 @@
+funcionamento:
+
+a tabela system_resources guarda as permissoes gerais
+	setor.recurso: a nomenclatura sera dessa forma, separado por . e explodidos no momento do uso
+a tabela group_resources guarda o vinculo do usuario com o recurso por grupo
+a tabela user_resources guarda o vinculo do usuario com o recurso imediato
+	o que tiver na tabela group_resources sera substituido pelo que tiver na tabela user_resources
