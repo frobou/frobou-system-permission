@@ -2,6 +2,9 @@
 
 namespace Frobou\SystemPermission;
 
+use Frobou\Db\FrobouDbConfig;
+use Frobou\Db\FrobouDbConnection;
+
 class FrobouSystemPermissionTest extends \PHPUnit_Framework_TestCase
 {
     /**
@@ -11,6 +14,18 @@ class FrobouSystemPermissionTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
+        if (!defined('MERGE_PERMISSIONS')) {
+            define('MERGE_PERMISSIONS', true);
+        }
+
+        $config = new FrobouDbConfig(json_decode(file_get_contents(__DIR__ . './../database.json')));
+        $connection = new FrobouDbConnection($config);
+        $connection->delete('delete from group_resources;delete from user_resources;delete from system_resources;');
+        $connection->insert('insert into system_resources (name, permission) values ("admin.teste", 7)');
+        $id = $connection->stats();
+        $connection->insert("insert into group_resources values (1,{$id['last_id']})");
+        $connection->insert("insert into user_resources values (1,{$id['last_id']})");
+
         $this->perms = new FrobouSystemPermission(__DIR__ . './../database.json');
     }
 
@@ -19,30 +34,94 @@ class FrobouSystemPermissionTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf(FrobouSystemPermission::class, $this->perms);
     }
 
-    public function testSelect()
+    public function testLoginFail()
     {
-        define('MERGE_PERMISSIONS', false);
-        $user = $this->perms->getPermissions('test', 'pass');
-        $this->assertTrue(count($user) === 1);
+        $user = $this->perms->login('test', 'passt');
+        $this->assertFalse($user);
     }
 
-//    public function testSelectFail()
-//    {
-//        $user = $this->perms->getPermissions('ispti', 'pass');
-//        $this->assertTrue(count($user) === 0);
-//    }
+    public function testLoginOk()
+    {
+        $user = $this->perms->login('test', 'pass');
+        $this->assertInstanceOf(SystemUser::class, $user);
+    }
 
-//    public function testInsertGroup()
-//    {
-//        $this->assertTrue($this->perms->createGroup('grp_' . rand(0, 15988)));
-//    }
+    public function testPermissionForResourceAdminDotTeste()
+    {
+        $user = $this->perms->login('test', 'pass');
+        $this->assertEquals($this->perms->getResourcePermission($user, 'admin.teste'), 7);
+    }
 
-//    /**
-//     * @expectedException Frobou\Pdo\Exceptions\FrobouSgdbErrorException
-//     */
-//    public function testeInsertGroupExists()
-//    {
-//        $this->perms->createGroup('SuperUser');
-//    }
+    public function testPermissionForResourceFail()
+    {
+        $user = $this->perms->login('test', 'pass');
+        $this->assertEquals($this->perms->getResourcePermission($user, 'admin'), null);
+    }
+
+    /**
+     * @expectedException Frobou\Db\Exceptions\FrobouDbSgdbErrorException
+     */
+    public function testeInsertGroupExists()
+    {
+        $this->perms->createGroup('SuperUser');
+    }
+
+    public function testInsertGroup()
+    {
+        $this->assertTrue($this->perms->createGroup('grp_' . rand(0, 15988)));
+    }
+
+    public function testInsertResource()
+    {
+        $this->assertTrue($this->perms->createResource('admin.test', 0));
+    }
+
+    public function testInsertUser()
+    {
+        $user = new SystemUser();
+        $user->setActive(1)->setCanEdit(1)->setCanLogin(1)->setCanUseApi(1)
+            ->setCanUseWeb(1)->setCreateDate()->setEmail('eu@email.com')->setName('Novo Usuario')
+            ->setPassword('senhanha')->setSystemGroup(1)->setUsername('username_' . rand(0, 12345))->setUserType('T');
+        $this->assertTrue($this->perms->createUser($user));
+    }
+
+    /**
+     * @expectedException Frobou\Db\Exceptions\FrobouDbSgdbErrorException
+     */
+    public function testInsertUserError()
+    {
+        $user = new SystemUser();
+        $user->setActive(1)->setAvatar('imagem.img')->setCanEdit(1)->setCanLogin(1)->setCanUseApi(1)
+            ->setCanUseWeb(1)->setCreateDate()->setEmail('eu@email.com')->setName('Novo Usuario')
+            ->setPassword('asdfasdfsd')->setSystemGroup(1)->setUserType('T');
+        $this->perms->createUser($user);
+    }
+
+    public function testUpdateUser()
+    {
+        $user = new SystemUser();
+        $user->setActive(0)->setCanEdit(0)->setCanLogin(1)->setCanUseApi(1)
+            ->setCanUseWeb(1)->setUpdateDate()->setEmail('stacio@email.com')->setName('Novo Usuario');
+        $this->assertTrue($this->perms->updateUser($user,['email' => 'eu@email.com', 'active' => 1]));
+    }
+
+    /**
+     * @expectedException Frobou\SystemPermission\Exceptions\FrobouSystemPermissionUserException
+     */
+    public function testUpdateUserError()
+    {
+        $user = new SystemUser();
+        $user->setActive(1)->setCanEdit(1)->setCanLogin(1)->setCanUseApi(1)
+            ->setCanUseWeb(1)->setUpdateDate('2016-12-22 12:30:22')->setEmail('eles@email.com')->setName('Novo Usuario');
+        $this->perms->updateUser($user,[]);
+    }
+
+    public function testUpdateUserNothingToDo()
+    {
+        $user = new SystemUser();
+        $user->setActive(1)->setCanEdit(1)->setCanLogin(1)->setCanUseApi(1)
+            ->setCanUseWeb(1)->setUpdateDate('2016-12-22 12:30:22')->setEmail('eles@email.com')->setName('Novo Usuario');
+        $this->assertFalse($this->perms->updateUser($user,['email' => 'tatu@email.com', 'active' => 1]));
+    }
 
 }

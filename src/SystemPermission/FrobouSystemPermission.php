@@ -2,25 +2,33 @@
 
 namespace Frobou\SystemPermission;
 
-use Frobou\Pdo\Db\FrobouPdoConfig;
-use Frobou\Pdo\Db\FrobouPdoConnection;
+use Frobou\Db\FrobouDbConfig;
+use Frobou\Db\FrobouDbConnection;
 
 class FrobouSystemPermission
 {
     /**
-     * @var FrobouPdoConnection
+     * @var FrobouDbConnection
      */
     private $connection;
 
     public function __construct($config_file)
     {
-        $config = new FrobouPdoConfig(json_decode(file_get_contents($config_file)));
-        $this->connection = new FrobouPdoConnection($config);
+        $config = new FrobouDbConfig(json_decode(file_get_contents($config_file)));
+        $this->connection = new FrobouDbConnection($config);
     }
 
-    public function createUser()
+    public function createUser(SystemUser $user)
     {
-        return true;
+        $user = $this->connection->insert($user->getInsertString(), null, $this->connection->utils->bindParams($user->getSqlParams()));
+        return $user;
+    }
+
+    public function updateUser(SystemUser $user, array $where)
+    {
+        $user = $this->connection->update($user->getUpdateString($where), null, $this->connection->utils->bindParams($user->getSqlParams()));
+        //todo: usar afected rows pra saber se foi alterado ou nao
+        return $user;
     }
 
     public function createGroup($name)
@@ -28,6 +36,16 @@ class FrobouSystemPermission
         $params = [];
         $query = 'INSERT INTO system_group (group_name) VALUES (:name)';
         array_push($params, ['param' => ':name', 'value' => $name, 'type' => \PDO::PARAM_STR]);
+        $user = $this->connection->insert($query, null, $params);
+        return $user;
+    }
+
+    public function createResource($name, $permission)
+    {
+        $params = [];
+        $query = 'INSERT INTO system_resources (name, permission) VALUES (:name, :permission)';
+        array_push($params, ['param' => ':name', 'value' => $name, 'type' => \PDO::PARAM_STR]);
+        array_push($params, ['param' => ':permission', 'value' => $permission, 'type' => \PDO::PARAM_INT]);
         $user = $this->connection->insert($query, null, $params);
         return $user;
     }
@@ -50,17 +68,16 @@ WHERE ur.system_user_id = {$id} group by sr.name";
         return $this->connection->select($query);
     }
 
-    private function returnUser($data)
+    private function getUser($data)
     {
         $user = new SystemUser();
-        $d = $data[0];
         $perms = [];
-        $u_per = $this->getUserPerms($d->id);
+        $u_per = $this->getUserPerms($data->id);
         if (count($u_per) === 0) {
-            $u_per = $this->getGroupPerms($d->id);
+            $u_per = $this->getGroupPerms($data->id);
         }
         if (defined('MERGE_PERMISSIONS') && MERGE_PERMISSIONS === true) {
-            $g_per = $this->getGroupPerms($d->id);
+            $g_per = $this->getGroupPerms($data->id);
             foreach ($g_per as $value) {
                 $perms[$value->name] = intval($value->permission);
             }
@@ -68,33 +85,40 @@ WHERE ur.system_user_id = {$id} group by sr.name";
         foreach ($u_per as $value) {
             $perms[$value->name] = intval($value->permission);
         }
-        $user->setActive($d->active)->setAvatar($d->avatar)->setCanEdit($d->can_edit)->setCanLogin($d->can_login)
-            ->setCanUseApi($d->can_use_api)->setCanUseWeb($d->can_use_web)->setDeleteDate($d->delete_date)
-            ->setEmail($d->email)->setName($d->name)->setSystemGroup($d->system_group_id)->setSystemResources($perms)
-            ->setUpdateDate($d->update_date)->setUsername($d->username)->setUserType($d->user_type);
+        $user->setActive($data->active)->setAvatar($data->avatar)->setCanEdit($data->can_edit)->setCanLogin($data->can_login)
+            ->setCanUseApi($data->can_use_api)->setCanUseWeb($data->can_use_web)->setDeleteDate($data->delete_date)
+            ->setEmail($data->email)->setName($data->name)->setSystemGroup($data->system_group_id)->setSystemResources($perms)
+            ->setUpdateDate($data->update_date)->setUsername($data->username)->setUserType($data->user_type)
+            ->setCreateDate($data->create_date);
         return $user;
     }
 
-    public function getPermissions($username, $password)
+    public function login($username, $password)
     {
         $params = [];
         $query = "SELECT id, username, password, name, email, avatar, active, can_edit, can_edit, can_login, 
-can_use_web, can_use_api, delete_date, system_group_id, update_date, user_type 
+can_use_web, can_use_api, delete_date, system_group_id, update_date, user_type, create_date 
 from system_user where active = 1 and username = :username";
         array_push($params, ['param' => ':username', 'value' => $username, 'type' => \PDO::PARAM_STR]);
         $user = $this->connection->select($query, null, $params);
-
         if (count($user) === 1) {
-            var_dump($this->returnUser($user));
-            die;
-            return $this->returnUser($user);
+            if (!defined('PASSWORD_SALT')) {
+                define('PASSWORD_SALT', 'default');
+            }
+            if (!password_verify(md5($username) . PASSWORD_SALT . $password, $user[0]->password)) {
+                return false;
+            }
+            return $this->getUser($user[0]);
         }
-        return false;
+        return null;
     }
 
-    public function getPermissionResource($resource)
+    public function getResourcePermission(SystemUser $user, $resource)
     {
-
+        $perms = $user->getSystemResources();
+        if (array_key_exists($resource, $perms)) {
+            return $perms[$resource];
+        }
     }
 
     public function registerResource()
