@@ -14,7 +14,6 @@ class FrobouSystemPermissionHelper
 
     public function __construct(FrobouDbConnection $connection, $db_name = null)
     {
-        $db_name = $connection->default_db;
         $this->connection = $connection;
         $this->db_name = $db_name;
     }
@@ -64,7 +63,7 @@ WHERE ur.system_user_id = {$id} group by sr.name";
 
     protected function cryptPass(SystemUser $user){
         $pass = $user->getPassword();
-        $user->setPassword(password_hash(md5($user->getUsername()) . PASSWORD_SALT . $pass, PASSWORD_DEFAULT));
+        $user->setPassword(password_hash($user->getUsername() . PASSWORD_SALT . md5($pass), PASSWORD_DEFAULT));
         return $user;
     }
 }

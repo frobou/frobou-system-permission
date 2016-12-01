@@ -53,4 +53,30 @@ abstract class SystemUserHelper
         }
         return $this->params;
     }
+
+    public function getPermission($resource, $separator = '.')
+    {
+        if (!is_string($resource)) {
+            throw new FrobouSystemPermissionUserException('Invalid resource format');
+        }
+        if (array_key_exists($resource, $this->system_resources)) {
+            return $this->mount($resource);
+        }
+        $has = false;
+        $res = explode($separator, $resource);
+        array_walk($this->system_resources, function ($value, $key) use (&$has, $res) {
+            if ($has === false && (strpos($key, $res[0]) === 0)) {
+                $has = true;
+            }
+        });
+        if ($has === false) {
+            return $this->mount(false);
+        }
+        return $this->mount(0);
+    }
+
+    private function mount($value)
+    {
+        return $value;
+    }
 }

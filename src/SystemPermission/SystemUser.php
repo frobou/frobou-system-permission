@@ -272,11 +272,6 @@ class SystemUser extends SystemUserHelper
         return $this;
     }
 
-    public function getSystemResources()
-    {
-        return $this->system_resources;
-    }
-
     public function setSystemResources($system_resources)
     {
         $this->system_resources = $system_resources;

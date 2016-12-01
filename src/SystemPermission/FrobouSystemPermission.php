@@ -9,7 +9,7 @@ class FrobouSystemPermission extends FrobouSystemPermissionHelper
      * @param $password
      * @return bool|SystemUser|null
      */
-    public function login($username, $password)
+    public function login($username, $password, $pass_in_plain = false)
     {
         $params = [];
         $query = "SELECT id, username, password, name, email, avatar, active, can_edit, can_edit, can_login, 
@@ -17,29 +17,19 @@ can_use_web, can_use_api, delete_date, system_group_id, update_date, user_type, 
 from system_user where active = 1 and username = :username";
         array_push($params, ['param' => ':username', 'value' => $username, 'type' => \PDO::PARAM_STR]);
         $user = $this->connection->select($query, $this->db_name, $params);
-        if (count($user) === 1) {
+        if (!is_bool($user) && count($user) === 1) {
             if (!defined('PASSWORD_SALT')) {
                 define('PASSWORD_SALT', 'default');
             }
-            if (!password_verify(md5($username) . PASSWORD_SALT . $password, $user[0]->password)) {
+            if ($pass_in_plain === true){
+                $password = md5($password);
+            }
+            if (!password_verify($username . PASSWORD_SALT . $password, $user[0]->password)) {
                 return false;
             }
             return $this->getUser($user[0]);
         }
         return null;
-    }
-
-    /**
-     * @param SystemUser $user
-     * @param $resource
-     * @return mixed
-     */
-    public function getResourcePermission(SystemUser $user, $resource)
-    {
-        $perms = $user->getSystemResources();
-        if (array_key_exists($resource, $perms)) {
-            return $perms[$resource];
-        }
     }
 
     /**
