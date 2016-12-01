@@ -4,7 +4,7 @@ namespace Frobou\SystemPermission;
 
 use Frobou\Validator\FrobouValidation;
 
-class SystemUser extends SystemUserAbstract
+class SystemUser extends SystemUserHelper
 {
 
     protected $id = '';
@@ -68,8 +68,10 @@ class SystemUser extends SystemUserAbstract
 
     public function setPassword($password)
     {
-        $this->password = $this->password = password_hash(md5($this->username . PASSWORD_SALT . $password), PASSWORD_DEFAULT);
-        array_push($this->fields, 'password');
+        $this->password = $password;
+        if (!in_array('password', $this->fields)) {
+            array_push($this->fields, 'password');
+        }
         return $this;
     }
 
@@ -130,7 +132,7 @@ class SystemUser extends SystemUserAbstract
 
     public function setCreateDate()
     {
-        $this->create_date = date_format(new \DateTime('now', new \DateTimeZone("America/Sao_Paulo")),"Y-m-d H:i:s");
+        $this->create_date = date_format(new \DateTime('now', new \DateTimeZone("America/Sao_Paulo")), "Y-m-d H:i:s");
         array_push($this->fields, 'create_date');
         return $this;
     }
@@ -145,7 +147,7 @@ class SystemUser extends SystemUserAbstract
 
     public function setUpdateDate()
     {
-        $this->update_date = date_format(new \DateTime('now', new \DateTimeZone("America/Sao_Paulo")),"Y-m-d H:i:s");
+        $this->update_date = date_format(new \DateTime('now', new \DateTimeZone("America/Sao_Paulo")), "Y-m-d H:i:s");
         array_push($this->fields, 'update_date');
         return $this;
     }
@@ -160,7 +162,7 @@ class SystemUser extends SystemUserAbstract
 
     public function setDeleteDate()
     {
-        $this->delete_date = date_format(new \DateTime('now', new \DateTimeZone("America/Sao_Paulo")),"Y-m-d H:i:s");
+        $this->delete_date = date_format(new \DateTime('now', new \DateTimeZone("America/Sao_Paulo")), "Y-m-d H:i:s");
         array_push($this->fields, 'delete_date');
         return $this;
     }

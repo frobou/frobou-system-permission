@@ -20,13 +20,21 @@ class FrobouSystemPermissionTest extends \PHPUnit_Framework_TestCase
 
         $config = new FrobouDbConfig(json_decode(file_get_contents(__DIR__ . './../database.json')));
         $connection = new FrobouDbConnection($config);
-        $connection->delete('delete from group_resources;delete from user_resources;delete from system_resources;');
+        $this->perms = new FrobouSystemPermission($connection);
+
+        $connection->delete('delete from group_resources;delete from user_resources;delete from system_resources;delete from system_user;');
+
+        $user = new SystemUser();
+        $user->setActive(1)->setAvatar('imagem.png')->setCanEdit(1)->setCanLogin(1)->setCanUseApi(1)
+            ->setCanUseWeb(1)->setCreateDate()->setEmail('eu@email.com')->setName('Novo Usuario')
+            ->setPassword('pass')->setSystemGroup(1)->setUserType('T')->setUsername('test');
+        $this->perms->createUser($user);
+        $u_id = $connection->stats();
+
         $connection->insert('insert into system_resources (name, permission) values ("admin.teste", 7)');
         $id = $connection->stats();
         $connection->insert("insert into group_resources values (1,{$id['last_id']})");
-        $connection->insert("insert into user_resources values (1,{$id['last_id']})");
-
-        $this->perms = new FrobouSystemPermission(__DIR__ . './../database.json');
+        $connection->insert("insert into user_resources values ({$u_id['last_id']},{$id['last_id']})");
     }
 
     public function testInstanceOf()
@@ -80,7 +88,7 @@ class FrobouSystemPermissionTest extends \PHPUnit_Framework_TestCase
     {
         $user = new SystemUser();
         $user->setActive(1)->setCanEdit(1)->setCanLogin(1)->setCanUseApi(1)
-            ->setCanUseWeb(1)->setCreateDate()->setEmail('eu@email.com')->setName('Novo Usuario')
+            ->setCanUseWeb(1)->setCreateDate()->setEmail('capitao@caverna.com')->setName('Novo Usuario')
             ->setPassword('senhanha')->setSystemGroup(1)->setUsername('username_' . rand(0, 12345))->setUserType('T');
         $this->assertTrue($this->perms->createUser($user));
     }

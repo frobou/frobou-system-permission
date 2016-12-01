@@ -4,7 +4,7 @@ namespace Frobou\SystemPermission;
 
 use Frobou\SystemPermission\Exceptions\FrobouSystemPermissionUserException;
 
-abstract class SystemUserAbstract
+abstract class SystemUserHelper
 {
 
     protected $fields = [];
