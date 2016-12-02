@@ -62,17 +62,17 @@ abstract class SystemUserHelper
         if (array_key_exists($resource, $this->system_resources)) {
             return $this->mount($resource);
         }
-        $has = false;
         $res = explode($separator, $resource);
-        array_walk($this->system_resources, function ($value, $key) use (&$has, $res) {
-            if ($has === false && (strpos($key, $res[0]) === 0)) {
-                $has = true;
+        $the_key = '';
+        for ($i = 0; $i <= count($res) - 2; $i++) {
+            $the_key .= $res[$i] . $separator;
+            foreach ($this->system_resources as $key => $value) {
+                if (array_key_exists(substr($the_key, 0, strlen($the_key) - 1), $this->system_resources)) {
+                    return $this->mount(0);
+                }
             }
-        });
-        if ($has === false) {
-            return $this->mount(false);
         }
-        return $this->mount(0);
+        return $this->mount(false);
     }
 
     private function mount($value)
