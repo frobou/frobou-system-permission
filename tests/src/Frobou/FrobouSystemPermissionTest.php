@@ -60,13 +60,23 @@ delete from system_user where id > 1;');
     public function testPermissionForResourceAdminDotTeste()
     {
         $user = $this->perms->login('test', 'pass', true);
-        //$this->assertEquals($this->perms->getResourcePermission($user, 'admin.teste'), 7);
+        $exp = new \stdClass();
+        $exp->can_select = true;
+        $exp->can_insert = true;
+        $exp->can_update = true;
+        $exp->can_delete = true;
+        $this->assertEquals($user->getPermission('admin.teste'), $exp);
     }
 
     public function testPermissionForResourceFail()
     {
         $user = $this->perms->login('test', 'pass', true);
-//        $this->assertEquals($this->perms->getResourcePermission($user, 'admin'), null);
+        $exp = new \stdClass();
+        $exp->can_select = false;
+        $exp->can_insert = false;
+        $exp->can_update = false;
+        $exp->can_delete = false;
+        $this->assertEquals($user->getPermission('admin'), $exp);
     }
 
     /**
