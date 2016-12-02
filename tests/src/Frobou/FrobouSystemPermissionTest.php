@@ -123,7 +123,7 @@ delete from system_user where id > 1;');
         $user = new SystemUser();
         $user->setActive(0)->setCanEdit(0)->setCanLogin(1)->setCanUseApi(1)
             ->setCanUseWeb(1)->setUpdateDate()->setEmail('stacio@email.com')->setName('Novo Usuario');
-        $this->assertTrue($this->perms->updateUser($user,['email' => 'eu@email.com', 'active' => 1]));
+        $this->assertTrue($this->perms->updateUser($user, ['email' => 'eu@email.com', 'active' => 1]));
     }
 
     /**
@@ -134,7 +134,7 @@ delete from system_user where id > 1;');
         $user = new SystemUser();
         $user->setActive(1)->setCanEdit(1)->setCanLogin(1)->setCanUseApi(1)
             ->setCanUseWeb(1)->setUpdateDate('2016-12-22 12:30:22')->setEmail('eles@email.com')->setName('Novo Usuario');
-        $this->perms->updateUser($user,[]);
+        $this->perms->updateUser($user, []);
     }
 
     public function testUpdateUserNothingToDo()
@@ -142,7 +142,33 @@ delete from system_user where id > 1;');
         $user = new SystemUser();
         $user->setActive(1)->setCanEdit(1)->setCanLogin(1)->setCanUseApi(1)
             ->setCanUseWeb(1)->setUpdateDate('2016-12-22 12:30:22')->setEmail('eles@email.com')->setName('Novo Usuario');
-        $this->assertFalse($this->perms->updateUser($user,['email' => 'tatu@email.com', 'active' => 1]));
+        $this->assertFalse($this->perms->updateUser($user, ['email' => 'tatu@email.com', 'active' => 1]));
+    }
+
+    public function testRegisterGroupResource()
+    {
+        $this->perms->createResource('admin.com', 3);
+        $this->assertTrue($this->perms->registerGroupResource('ispti', 'admin.com'));
+    }
+
+    public function testUnRegisterGroupResource()
+    {
+        $this->perms->createResource('admin.user', 3);
+        $this->assertTrue($this->perms->registerGroupResource('ispti', 'admin.user'));
+        $this->assertTrue($this->perms->unregisterGroupResource('ispti', 'admin.user'));
+    }
+
+    public function testRegisterUserResource()
+    {
+        $this->perms->createResource('admin.com', 7);
+        $this->assertTrue($this->perms->registerUserResource('ispti', 'admin.com'));
+    }
+
+    public function testUnRegisterUserResource()
+    {
+        $this->perms->createResource('admin.group', 7);
+        $this->assertTrue($this->perms->registerUserResource('ispti', 'admin.group'));
+        $this->assertTrue($this->perms->unregisterUserResource('ispti', 'admin.group'));
     }
 
 }

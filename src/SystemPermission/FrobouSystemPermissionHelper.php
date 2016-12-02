@@ -3,6 +3,7 @@
 namespace Frobou\SystemPermission;
 
 use Frobou\Db\FrobouDbConnection;
+use Frobou\SystemPermission\Exceptions\FrobouSystemPermissionUserException;
 
 class FrobouSystemPermissionHelper
 {
@@ -61,9 +62,66 @@ WHERE ur.system_user_id = {$id} group by sr.name";
         return $user;
     }
 
-    protected function cryptPass(SystemUser $user){
+    protected function cryptPass(SystemUser $user)
+    {
         $pass = $user->getPassword();
         $user->setPassword(password_hash($user->getUsername() . PASSWORD_SALT . md5($pass), PASSWORD_DEFAULT));
         return $user;
+    }
+
+    protected function getUserGroupId($username)
+    {
+        $query = "SELECT id, system_group_id FROM system_user where active = 1 AND username = '{$username}'";
+        return $this->connection->select($query, $this->db_name);
+    }
+
+    protected function getResourceId($resorcename)
+    {
+        $query = "SELECT id FROM system_resources where name = '{$resorcename}'";
+        return $this->connection->select($query, $this->db_name);
+    }
+
+    protected function linkGroupResource($uid, $resid)
+    {
+        $query = "SELECT system_group_id FROM group_resources where system_group_id = {$uid} and system_resources_id = {$resid}";
+        $v = $this->connection->select($query, $this->db_name);
+        if (count($v) > 0) {
+            throw new FrobouSystemPermissionUserException('Resource exists');
+        }
+        $query = "INSERT INTO group_resources values ({$uid}, $resid)";
+        return $this->connection->insert($query, $this->db_name);
+    }
+
+    protected function unlinkGroupResource($uid, $resid)
+    {
+        $query = "SELECT system_group_id FROM group_resources where system_group_id = {$uid} and system_resources_id = {$resid}";
+        $v = $this->connection->select($query, $this->db_name);
+        if (count($v) !== 1) {
+            throw new FrobouSystemPermissionUserException('Resource exists');
+        }
+        $query = "DELETE FROM group_resources WHERE system_group_id = {$uid} and system_resources_id = {$resid}";
+        return $this->connection->delete($query, $this->db_name);
+    }
+
+    protected function linkUserResource($uid, $resid)
+    {
+        $query = "SELECT system_user_id FROM user_resources where system_user_id = {$uid} and system_resources_id = {$resid}";
+        $v = $this->connection->select($query, $this->db_name);
+        if (count($v) > 0) {
+            throw new FrobouSystemPermissionUserException('Resource exists');
+        }
+        $query = "INSERT INTO user_resources values ({$uid}, $resid)";
+        return $this->connection->insert($query, $this->db_name);
+    }
+
+    protected function unlinkUserResource($uid, $resid)
+    {
+        $query = "SELECT system_user_id FROM user_resources where system_user_id = {$uid} and system_resources_id = {$resid}";
+        $v = $this->connection->select($query, $this->db_name);
+        if (count($v) !== 1) {
+            throw new FrobouSystemPermissionUserException('Resource exists');
+        }
+        $query = "DELETE FROM user_resources WHERE system_user_id = {$uid} AND system_resources_id = $resid";
+        return $this->connection->insert($query, $this->db_name);
     }
 }

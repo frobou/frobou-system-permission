@@ -1,7 +1,6 @@
 ## Frobou System Permission ##
 
-Sistema de verificação de permissões de uso.  
-**Ainda em construção**
+Sistema de verificação de permissões de uso.
 
 **Como funciona:**
 As permissões são verificadas onde são necessárias, como mostra o exemplo:
@@ -36,8 +35,12 @@ Ao instanciar FrobouSystemPermission, todos os recursos necessários ficam dispo
  - updateUser(SystemUser $user, array $where)
  - createGroup($name)
  - createResource($name, $permission)
+ - registerGroupResource($username, $resourcename)
+ - unregisterGroupResource($username, $resourcename)
+ - registerUserResource($username, $resourcename)
+ - unregisterUserResource($username, $resourcename)
 
-e a instancia de SystemUser recebida no métido login fornece:
+e a instância de SystemUser recebida no métido login fornece, além dos dados do usuário:
 
  - getPermission($resource, $separator = '.')
  - getInsertString()
@@ -100,8 +103,31 @@ Criando um usuário
             ->setPassword('senhanha')->setSystemGroup(1)->setUsername('username_' . rand(0, 12345))->setUserType('T');
         $this->assertTrue($this->perms->createUser($user));
     }
-**Todo:**
+Vinculando grupo X permissão
 
- - Vinculação de permissões e grupos
- - Vinculação de permissões e usuários
-
+	public function testRegisterGroupResource()
+	{
+		$this->perms->createResource('admin.com', 3);
+		$this->assertTrue($this->perms->registerGroupResource('user', 'admin.com'));
+    }
+Desvinculando grupo X permissão
+    
+	public function testUnRegisterGroupResource()
+	{
+		$this->perms->createResource('admin.com', 3);
+		$this->assertTrue($this->perms->unregisterGroupResource('user', 'admin.com'));
+    }
+Vinculando user X permissão
+    
+	public function testRegisterUserResource()
+    {
+        $this->perms->createResource('admin.com', 7);
+        $this->assertTrue($this->perms->registerUserResource('ispti', 'admin.com'));
+    }
+Desvinculando user X permissão
+    
+	public function testRegisterUserResource()
+    {
+        $this->perms->createResource('admin.com', 7);
+        $this->assertTrue($this->perms->unregisterUserResource('ispti', 'admin.com'));
+    }

@@ -2,6 +2,8 @@
 
 namespace Frobou\SystemPermission;
 
+use Frobou\SystemPermission\Exceptions\FrobouSystemPermissionUserException;
+
 class FrobouSystemPermission extends FrobouSystemPermissionHelper
 {
     /**
@@ -21,7 +23,7 @@ from system_user where active = 1 and username = :username";
             if (!defined('PASSWORD_SALT')) {
                 define('PASSWORD_SALT', 'default');
             }
-            if ($pass_in_plain === true){
+            if ($pass_in_plain === true) {
                 $password = md5($password);
             }
             if (!password_verify($username . PASSWORD_SALT . $password, $user[0]->password)) {
@@ -76,6 +78,9 @@ from system_user where active = 1 and username = :username";
      */
     public function createResource($name, $permission)
     {
+        if (intval($permission) < 0 || intval($permission) > 7) {
+            throw new FrobouSystemPermissionUserException('registerGroupResource failed for permission value');
+        }
         $params = [];
         $query = 'INSERT INTO system_resources (name, permission) VALUES (:name, :permission)';
         array_push($params, ['param' => ':name', 'value' => $name, 'type' => \PDO::PARAM_STR]);
@@ -83,19 +88,41 @@ from system_user where active = 1 and username = :username";
         return $this->connection->insert($query, $this->db_name, $params);
     }
 
-    public function registerResource()
+    private function toReg($username, $resourcename)
     {
-        return true;
+        $user = $this->getUserGroupId($username);
+        if (count($user) !== 1) {
+            throw new FrobouSystemPermissionUserException('registerGroupResource failed for username');
+        }
+        $res = $this->getResourceId($resourcename);
+        if (count($res) !== 1) {
+            throw new FrobouSystemPermissionUserException('registerGroupResource failed for resourcename');
+        }
+        return ['user' => $user[0], 'res' => $res[0]];
     }
 
-    public function unregisterResource()
+    public function registerGroupResource($username, $resourcename)
     {
-        return true;
+        $val = $this->toReg($username, $resourcename);
+        return $this->linkGroupResource($val['user']->system_group_id, $val['res']->id);
     }
 
-    public function listResources($for_user = null)
+    public function unregisterGroupResource($username, $resourcename)
     {
-        return true;
+        $val = $this->toReg($username, $resourcename);
+        return $this->unlinkGroupResource($val['user']->system_group_id, $val['res']->id);
+    }
+
+    public function registerUserResource($username, $resourcename)
+    {
+        $val = $this->toReg($username, $resourcename);
+        return $this->linkUserResource($val['user']->id, $val['res']->id);
+    }
+
+    public function unregisterUserResource($username, $resourcename)
+    {
+        $val = $this->toReg($username, $resourcename);
+        return $this->unlinkUserResource($val['user']->id, $val['res']->id);
     }
 
 }
