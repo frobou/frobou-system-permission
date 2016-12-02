@@ -171,4 +171,65 @@ delete from system_user where id > 1;');
         $this->assertTrue($this->perms->unregisterUserResource('ispti', 'admin.group'));
     }
 
+    /**
+     * @expectedException Frobou\SystemPermission\Exceptions\FrobouSystemPermissionUserException
+     */
+    public function testDeleteUserFail(){
+        $this->assertTrue($this->perms->deleteUser('fabio'));
+    }
+
+    public function testDeleteUser(){
+        $username = 'username_' . rand(0, 12345);
+        $user = new SystemUser();
+        $user->setActive(1)->setCanEdit(1)->setCanLogin(1)->setCanUseApi(1)
+            ->setCanUseWeb(1)->setCreateDate()->setEmail('capitao@caverna.com')->setName('Novo Usuario')
+            ->setPassword('senhanha')->setSystemGroup(1)->setUsername($username)->setUserType('T');
+        $this->perms->createUser($user);
+        $this->perms->createResource('admin.com', 3);
+        $this->perms->registerGroupResource($username, 'admin.com');
+        $this->perms->registerUserResource($username, 'admin.com');
+        $this->assertTrue($this->perms->deleteUser($username));
+    }
+
+    public function testUndeleteUser(){
+        $username = 'fabio';
+        $user = new SystemUser();
+        $user->setActive(1)->setCanEdit(1)->setCanLogin(1)->setCanUseApi(1)
+            ->setCanUseWeb(1)->setCreateDate()->setEmail('capitao@caverna.com')->setName('Novo Usuario')
+            ->setPassword('senhanha')->setSystemGroup(1)->setUsername($username)->setUserType('T');
+        $this->perms->createUser($user);
+        $this->perms->deleteUser($username);
+        $this->assertTrue($this->perms->undeleteUser($username));
+    }
+
+    public function testDeleteUserReal(){
+        define('TRUE_DELETE', true);
+        $username = 'username_' . rand(0, 12345);
+        $user = new SystemUser();
+        $user->setActive(1)->setCanEdit(1)->setCanLogin(1)->setCanUseApi(1)
+            ->setCanUseWeb(1)->setCreateDate()->setEmail('capitao@caverna.com')->setName('Novo Usuario')
+            ->setPassword('senhanha')->setSystemGroup(1)->setUsername($username)->setUserType('T');
+        $this->perms->createUser($user);
+//        $this->perms->createResource('admin.com', 3);
+//        $this->perms->registerGroupResource($username, 'admin.com');
+//        $this->perms->registerUserResource($username, 'admin.com');
+        $this->assertTrue($this->perms->deleteUser($username));
+    }
+
+    /**
+     * @expectedException Frobou\Db\Exceptions\FrobouDbSgdbErrorException
+     */
+    public function testDeleteUserRealError(){
+        $username = 'username_' . rand(0, 12345);
+        $user = new SystemUser();
+        $user->setActive(1)->setCanEdit(1)->setCanLogin(1)->setCanUseApi(1)
+            ->setCanUseWeb(1)->setCreateDate()->setEmail('capitao@caverna.com')->setName('Novo Usuario')
+            ->setPassword('senhanha')->setSystemGroup(1)->setUsername($username)->setUserType('T');
+        $this->perms->createUser($user);
+        $this->perms->createResource('admin.com', 3);
+        $this->perms->registerGroupResource($username, 'admin.com');
+        $this->perms->registerUserResource($username, 'admin.com');
+        $this->assertTrue($this->perms->deleteUser($username));
+    }
+
 }

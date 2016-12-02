@@ -69,7 +69,7 @@ WHERE ur.system_user_id = {$id} group by sr.name";
         return $user;
     }
 
-    protected function getUserGroupId($username)
+    protected function getUserGroupId($username, $deleted = false)
     {
         $query = "SELECT id, system_group_id FROM system_user where active = 1 AND username = '{$username}'";
         return $this->connection->select($query, $this->db_name);
@@ -122,6 +122,6 @@ WHERE ur.system_user_id = {$id} group by sr.name";
             throw new FrobouSystemPermissionUserException('Resource exists');
         }
         $query = "DELETE FROM user_resources WHERE system_user_id = {$uid} AND system_resources_id = $resid";
-        return $this->connection->insert($query, $this->db_name);
+        return $this->connection->delete($query, $this->db_name);
     }
 }

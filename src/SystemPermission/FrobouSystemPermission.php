@@ -58,6 +58,32 @@ from system_user where active = 1 and username = :username";
         return $op;
     }
 
+    public function deleteUser($username)
+    {
+        $user = $this->getUserGroupId($username);
+        if (count($user) !== 1){
+            throw new FrobouSystemPermissionUserException('User not found');
+        }
+        if (defined('TRUE_DELETE') && TRUE_DELETE === true){
+            $query = 'DELETE FROM system_user ';
+        } else {
+            $date = date_format(new \DateTime('now', new \DateTimeZone("America/Sao_Paulo")), "Y-m-d H:i:s");
+            $query = "UPDATE system_user SET deleted = 1, delete_date = '{$date}' ";
+        }
+        $query .= " WHERE id = {$user[0]->id}";
+        return $this->connection->delete($query, $this->db_name);
+    }
+
+    public function undeleteUser($username)
+    {
+        $user = $this->getUserGroupId($username);
+        if (count($user) !== 1){
+            throw new FrobouSystemPermissionUserException('User not found');
+        }
+        $query = "UPDATE system_user SET deleted = 0, delete_date = null WHERE id = {$user[0]->id}";
+        return $this->connection->delete($query, $this->db_name);
+    }
+
     /**
      * @param $name
      * @return mixed

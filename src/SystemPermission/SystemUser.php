@@ -30,9 +30,6 @@ class SystemUser extends SystemUserHelper
         if (!defined('PASSWORD_SALT')) {
             define('PASSWORD_SALT', 'default');
         }
-        if (!defined('TRUE_DELETE')) {
-            define('TRUE_DELETE', false);
-        }
     }
 
     public function getId()

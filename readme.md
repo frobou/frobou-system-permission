@@ -33,6 +33,8 @@ Ao instanciar FrobouSystemPermission, todos os recursos necessários ficam dispo
  - login($username, $password, $pass_in_plain = false)
  - createUser(SystemUser $user)
  - updateUser(SystemUser $user, array $where)
+ - deleteUser($username)
+ - undeleteUser($username)
  - createGroup($name)
  - createResource($name, $permission)
  - registerGroupResource($username, $resourcename)
@@ -61,6 +63,7 @@ Algumas constantes podem ser usada como uma forma de configuração do sistema.
  - MERGE_PERMISSIONS - Boolean: true faz com que as permissões de usuário subscrevam as permissões de grupo de mesmo nome e mescla ambos, passando a fornecer a junção das permissões resultantes.
  - BASE_PERMISSION - Boolean: true significa que se existirem permissões base, o valor atribuído a elas são retornados, caso contrario a permissão é 0
  - PASSWORD_SALT - String: o valor padrão é "default", se for informado um valor, ele será usado para a geração de senha. **Obs: uma senha gerada com um salt não será validada se o valor de PASSWORD_SALT for alterado**
+ - TRUE_DELETE - Boolean: caso seja true, o registro do usuário será efetivamente excluído, caso contrário, somente desativado. **Obs: não existe tratamento pra exclusão das relações entre tabelas, o que significa que, antes de excluir o usuário, todos os registros vinculados devem ser excluídos, criando uma exception do tipo FrobouDbSgdbErrorException**
 
 Testando login
 
@@ -130,4 +133,42 @@ Desvinculando user X permissão
     {
         $this->perms->createResource('admin.com', 7);
         $this->assertTrue($this->perms->unregisterUserResource('ispti', 'admin.com'));
+    }
+Testando Remover usuário (desativar)
+
+    public function testDeleteUser(){
+        $username = 'username_' . rand(0, 12345);
+        $user = new SystemUser();
+        $user->setActive(1)->setCanEdit(1)->setCanLogin(1)->setCanUseApi(1)
+            ->setCanUseWeb(1)->setCreateDate()->setEmail('capitao@caverna.com')->setName('Novo Usuario')
+            ->setPassword('senhanha')->setSystemGroup(1)->setUsername($username)->setUserType('T');
+        $this->perms->createUser($user);
+        $this->perms->createResource('admin.com', 3);
+        $this->perms->registerGroupResource($username, 'admin.com');
+        $this->perms->registerUserResource($username, 'admin.com');
+        $this->assertTrue($this->perms->deleteUser($username));
+    }
+Testando reativar usuário
+
+    public function testUndeleteUser(){
+        $username = 'fabio';
+        $user = new SystemUser();
+        $user->setActive(1)->setCanEdit(1)->setCanLogin(1)->setCanUseApi(1)
+            ->setCanUseWeb(1)->setCreateDate()->setEmail('capitao@caverna.com')->setName('Novo Usuario')
+            ->setPassword('senhanha')->setSystemGroup(1)->setUsername($username)->setUserType('T');
+        $this->perms->createUser($user);
+        $this->perms->deleteUser($username);
+        $this->assertTrue($this->perms->undeleteUser($username));
+    }
+Testando remover usuário (realmente)
+
+	public function testDeleteUserReal(){
+        define('TRUE_DELETE', true);
+        $username = 'username_' . rand(0, 12345);
+        $user = new SystemUser();
+        $user->setActive(1)->setCanEdit(1)->setCanLogin(1)->setCanUseApi(1)
+            ->setCanUseWeb(1)->setCreateDate()->setEmail('capitao@caverna.com')->setName('Novo Usuario')
+            ->setPassword('senhanha')->setSystemGroup(1)->setUsername($username)->setUserType('T');
+        $this->perms->createUser($user);
+        $this->assertTrue($this->perms->deleteUser($username));
     }
