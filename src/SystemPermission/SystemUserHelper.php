@@ -71,7 +71,10 @@ abstract class SystemUserHelper
                     continue;
                 }
                 if (array_key_exists(substr($the_key, 0, strlen($the_key) - 1), $this->system_resources)) {
-                    return $this->mount($value);
+                    if (defined('BASE_PERMISSION') && BASE_PERMISSION === true) {
+                        return $this->mount($value);
+                    }
+                    return $this->mount(0);
                 }
             }
         }

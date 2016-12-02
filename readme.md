@@ -1,7 +1,7 @@
 ## Frobou System Permission ##
 
-Sistema de verificação de permissões de uso.
-***Ainda em fase de construção**
+Sistema de verificação de permissões de uso.  
+**Ainda em construção**
 
 **Como funciona:**
 As permissões são verificadas onde são necessárias, como mostra o exemplo:
@@ -38,9 +38,15 @@ e a instancia de SystemUser recebida no métido login fornece:
  - Permissões por grupo.
  - Permissões por usuário.
  - Permissões unificadas: 
-	 - se MERGE_PERMISSIONS estiver definido e seu valor for true, as permissões de usuário subscrevem as permissões de grupo de mesmo nome e mescla ambos, passando a fornecer a junção das permissões resultantes.
+	 - ver MERGE_PERMISSIONS 
 
 ## Usando: ##
+
+Algumas constantes podem ser usada como uma forma de configuração do sistema.
+
+ - MERGE_PERMISSIONS - Boolean: true faz com que as permissões de usuário subscrevam as permissões de grupo de mesmo nome e mescla ambos, passando a fornecer a junção das permissões resultantes.
+ - BASE_PERMISSION - Boolean: true significa que se existirem permissões base, o valor atribuído a elas são retornados, caso contrario a permissão é 0
+ - PASSWORD_SALT - String: o valor padrão é "default", se for informado um valor, ele será usado para a geração de senha. **Obs: uma senha gerada com um salt não será validada se o valor de PASSWORD_SALT for alterado**
 
 Testando login
 
@@ -83,7 +89,8 @@ Criando um usuário
             ->setPassword('senhanha')->setSystemGroup(1)->setUsername('username_' . rand(0, 12345))->setUserType('T');
         $this->assertTrue($this->perms->createUser($user));
     }
-**Em andamento:**
+**Todo:**
 
  - Vinculação de permissões e grupos
  - Vinculação de permissões e usuários
+
