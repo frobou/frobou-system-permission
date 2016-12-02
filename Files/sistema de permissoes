@@ -7,7 +7,7 @@ a tabela user_resources guarda o vinculo do usuario com o recurso imediato
 	o que tiver na tabela group_resources sera substituido pelo que tiver na tabela user_resources
 
 existe uma constante a ser usada para o salt, PASSWORD_SALT que deve ser definida de acordo com a necessidade
-existe uma constante que define se o usuario vai ser removido do banco ou apensa desativado, TRUE_DELETE
+existe uma constante que define se o usuario vai ser removido do banco ou apenas desativado, TRUE_DELETE
 
 0	select
 1	select	insert

@@ -11,10 +11,21 @@ As permissões são verificadas onde são necessárias, como mostra o exemplo:
     $perms = new FrobouSystemPermission($connection);
     $user = $this->perms->login('test', 'pass', true);
     $exp = $user->getPermission('admin');
-    $exp->can_select = false;
-    $exp->can_insert = false;
-    $exp->can_update = false;
-    $exp->can_delete = false;
+    var_dump($exp);
+    object(stdClass)#140 (4) {
+      ["can_select"]=>
+      bool(true)
+      ["can_insert"]=>
+      bool(false)
+      ["can_update"]=>
+      bool(true)
+      ["can_delete"]=>
+      bool(false)
+    }
+    if ($exp->can_select){
+    	echo "I can";
+    }
+    
 A ideia é ter permissões com níveis hierárquicos, admin.teste diz que o usuário tem permissão X no recurso teste da tela admin
 
 Usamos o pacote [frobou-db-connect](https://github.com/frobou/frobou-db-connect) para a conexão com banco de dados.
