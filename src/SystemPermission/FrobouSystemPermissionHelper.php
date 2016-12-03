@@ -71,7 +71,13 @@ WHERE ur.system_user_id = {$id} group by sr.name";
 
     protected function getUserGroupId($username, $deleted = false)
     {
-        $query = "SELECT id, system_group_id FROM system_user where active = 1 AND username = '{$username}'";
+        $status = 1;
+        $delstatus = 0;
+        if ($deleted === true){
+            $status = 0;
+            $delstatus = 1;
+        }
+        $query = "SELECT id, system_group_id FROM system_user WHERE deleted = {$delstatus} AND active = {$status} AND username = '{$username}'";
         return $this->connection->select($query, $this->db_name);
     }
 

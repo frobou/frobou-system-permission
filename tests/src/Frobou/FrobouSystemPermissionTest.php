@@ -174,11 +174,13 @@ delete from system_user where id > 1;');
     /**
      * @expectedException Frobou\SystemPermission\Exceptions\FrobouSystemPermissionUserException
      */
-    public function testDeleteUserFail(){
+    public function testDeleteUserFail()
+    {
         $this->assertTrue($this->perms->deleteUser('fabio'));
     }
 
-    public function testDeleteUser(){
+    public function testDeleteUser()
+    {
         $username = 'username_' . rand(0, 12345);
         $user = new SystemUser();
         $user->setActive(1)->setCanEdit(1)->setCanLogin(1)->setCanUseApi(1)
@@ -191,7 +193,8 @@ delete from system_user where id > 1;');
         $this->assertTrue($this->perms->deleteUser($username));
     }
 
-    public function testUndeleteUser(){
+    public function testUndeleteUser()
+    {
         $username = 'fabio';
         $user = new SystemUser();
         $user->setActive(1)->setCanEdit(1)->setCanLogin(1)->setCanUseApi(1)
@@ -202,7 +205,8 @@ delete from system_user where id > 1;');
         $this->assertTrue($this->perms->undeleteUser($username));
     }
 
-    public function testDeleteUserReal(){
+    public function testDeleteUserReal()
+    {
         define('TRUE_DELETE', true);
         $username = 'username_' . rand(0, 12345);
         $user = new SystemUser();
@@ -219,7 +223,8 @@ delete from system_user where id > 1;');
     /**
      * @expectedException Frobou\Db\Exceptions\FrobouDbSgdbErrorException
      */
-    public function testDeleteUserRealError(){
+    public function testDeleteUserRealError()
+    {
         $username = 'username_' . rand(0, 12345);
         $user = new SystemUser();
         $user->setActive(1)->setCanEdit(1)->setCanLogin(1)->setCanUseApi(1)

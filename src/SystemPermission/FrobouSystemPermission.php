@@ -16,7 +16,7 @@ class FrobouSystemPermission extends FrobouSystemPermissionHelper
         $params = [];
         $query = "SELECT id, username, password, name, email, avatar, active, can_edit, can_edit, can_login, 
 can_use_web, can_use_api, delete_date, system_group_id, update_date, user_type, create_date 
-from system_user where active = 1 and username = :username";
+FROM system_user WHERE deleted = 0 AND active = 1 and username = :username";
         array_push($params, ['param' => ':username', 'value' => $username, 'type' => \PDO::PARAM_STR]);
         $user = $this->connection->select($query, $this->db_name, $params);
         if (!is_bool($user) && count($user) === 1) {
@@ -68,7 +68,7 @@ from system_user where active = 1 and username = :username";
             $query = 'DELETE FROM system_user ';
         } else {
             $date = date_format(new \DateTime('now', new \DateTimeZone("America/Sao_Paulo")), "Y-m-d H:i:s");
-            $query = "UPDATE system_user SET deleted = 1, delete_date = '{$date}' ";
+            $query = "UPDATE system_user SET deleted = 1, active = 0, delete_date = '{$date}' ";
         }
         $query .= " WHERE id = {$user[0]->id}";
         return $this->connection->delete($query, $this->db_name);
@@ -76,11 +76,11 @@ from system_user where active = 1 and username = :username";
 
     public function undeleteUser($username)
     {
-        $user = $this->getUserGroupId($username);
+        $user = $this->getUserGroupId($username, true);
         if (count($user) !== 1){
             throw new FrobouSystemPermissionUserException('User not found');
         }
-        $query = "UPDATE system_user SET deleted = 0, delete_date = null WHERE id = {$user[0]->id}";
+        $query = "UPDATE system_user SET deleted = 0, active = 1, delete_date = null WHERE id = {$user[0]->id}";
         return $this->connection->delete($query, $this->db_name);
     }
 
