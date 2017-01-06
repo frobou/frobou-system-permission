@@ -2,10 +2,21 @@
 
 namespace Frobou\SystemPermission;
 
+use Frobou\Pdo\Db\FrobouDbUtils;
+use Frobou\Pdo\Db\FrobouPdoConnection;
 use Frobou\SystemPermission\Exceptions\FrobouSystemPermissionUserException;
 
 class FrobouSystemPermission extends FrobouSystemPermissionHelper
 {
+
+    private $utils;
+
+    public function __construct(FrobouPdoConnection $connection, $db_name = null)
+    {
+        $this->utils = new FrobouDbUtils();
+        parent::__construct($connection, $db_name);
+    }
+
     /**
      * @param $username
      * @param $password
@@ -41,7 +52,10 @@ FROM system_user WHERE deleted = 0 AND active = 1 and username = :username";
     public function createUser(SystemUser $user)
     {
         $u = $this->cryptPass($user);
-        $op = $this->connection->insert($u->getInsertString(), $this->db_name, $this->connection->utils->bindParams($u->getSqlParams()));
+        $params = $this->utils->bindParams($u->getSqlParams());
+        array_shift($params);
+        array_shift($params);
+        $op = $this->connection->insert($u->getInsertString(), $this->db_name, $params);
         return $op;
     }
 
@@ -53,7 +67,10 @@ FROM system_user WHERE deleted = 0 AND active = 1 and username = :username";
     public function updateUser(SystemUser $user, array $where)
     {
         $u = $this->cryptPass($user);
-        $op = $this->connection->update($u->getUpdateString($where), $this->db_name, $this->connection->utils->bindParams($u->getSqlParams()));
+        $params = $this->utils->bindParams($u->getSqlParams());
+        array_shift($params);
+        array_shift($params);
+        $op = $this->connection->update($u->getUpdateString($where), $this->db_name, $params);
         //todo: usar afected rows pra saber se foi alterado ou nao
         return $op;
     }

@@ -2,8 +2,8 @@
 
 namespace Frobou\SystemPermission;
 
-use Frobou\Db\FrobouDbConfig;
-use Frobou\Db\FrobouDbConnection;
+use Frobou\Pdo\Db\FrobouPdoConfig;
+use Frobou\Pdo\Db\FrobouPdoConnection;
 
 class FrobouSystemPermissionTest extends \PHPUnit_Framework_TestCase
 {
@@ -18,8 +18,8 @@ class FrobouSystemPermissionTest extends \PHPUnit_Framework_TestCase
             define('MERGE_PERMISSIONS', true);
         }
 
-        $config = new FrobouDbConfig(json_decode(file_get_contents(__DIR__ . './../database.json')));
-        $connection = new FrobouDbConnection($config);
+        $config = new FrobouPdoConfig(json_decode(file_get_contents(__DIR__ . './../database.json')));
+        $connection = new FrobouPdoConnection($config);
         $this->perms = new FrobouSystemPermission($connection);
 
         $connection->delete('delete from group_resources;
@@ -80,7 +80,7 @@ delete from system_user where id > 1;');
     }
 
     /**
-     * @expectedException Frobou\Db\Exceptions\FrobouDbSgdbErrorException
+     * @expectedException Frobou\Pdo\Exceptions\FrobouSgdbErrorException
      */
     public function testeInsertGroupExists()
     {
@@ -107,7 +107,7 @@ delete from system_user where id > 1;');
     }
 
     /**
-     * @expectedException Frobou\Db\Exceptions\FrobouDbSgdbErrorException
+     * @expectedException Frobou\Pdo\Exceptions\FrobouSgdbErrorException
      */
     public function testInsertUserError()
     {
@@ -221,7 +221,7 @@ delete from system_user where id > 1;');
     }
 
     /**
-     * @expectedException Frobou\Db\Exceptions\FrobouDbSgdbErrorException
+     * @expectedException Frobou\Pdo\Exceptions\FrobouSgdbErrorException
      */
     public function testDeleteUserRealError()
     {
