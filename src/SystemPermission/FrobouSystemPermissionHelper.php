@@ -2,7 +2,7 @@
 
 namespace Frobou\SystemPermission;
 
-use Frobou\Pdo\Db\FrobouPdoConnection;
+use Frobou\Db\FrobouDbConnection;
 use Frobou\SystemPermission\Exceptions\FrobouSystemPermissionUserException;
 
 class FrobouSystemPermissionHelper
@@ -13,7 +13,7 @@ class FrobouSystemPermissionHelper
     protected $connection;
     protected $db_name;
 
-    public function __construct(FrobouPdoConnection $connection, $db_name = null)
+    public function __construct(FrobouDbConnection $connection, $db_name = null)
     {
         $this->connection = $connection;
         $this->db_name = $db_name;

@@ -2,8 +2,8 @@
 
 namespace Frobou\SystemPermission;
 
-use Frobou\Pdo\Db\FrobouDbUtils;
-use Frobou\Pdo\Db\FrobouPdoConnection;
+use Frobou\Db\FrobouDbConnection;
+use Frobou\Db\FrobouDbUtils;
 use Frobou\SystemPermission\Exceptions\FrobouSystemPermissionUserException;
 
 class FrobouSystemPermission extends FrobouSystemPermissionHelper
@@ -11,7 +11,7 @@ class FrobouSystemPermission extends FrobouSystemPermissionHelper
 
     private $utils;
 
-    public function __construct(FrobouPdoConnection $connection, $db_name = null)
+    public function __construct(FrobouDbConnection $connection, $db_name = null)
     {
         $this->utils = new FrobouDbUtils();
         parent::__construct($connection, $db_name);
