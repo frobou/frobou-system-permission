@@ -70,9 +70,10 @@ abstract class SystemUserHelper
                 if ($key == '' || $value == '') {
                     continue;
                 }
-                if (array_key_exists(substr($the_key, 0, strlen($the_key) - 1), $this->system_resources)) {
+                $ac_key = substr($the_key, 0, strlen($the_key) - 1);
+                if (array_key_exists($ac_key, $this->system_resources)) {
                     if (defined('BASE_PERMISSION') && BASE_PERMISSION === true) {
-                        return $this->mount($value);
+                        return $this->mount($this->system_resources[$ac_key]);
                     }
                     return $this->mount(0);
                 }
