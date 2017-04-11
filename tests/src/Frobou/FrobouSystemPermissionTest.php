@@ -40,6 +40,13 @@ delete from system_user where id > 1;');
         $connection->insert("insert into user_resources values ({$u_id['last_id']},{$id['last_id']})");
     }
 
+    public function testGetUserList()
+    {
+        //TODO: fazer o teste do metodo
+        //var_dump($this->perms->getUserList());die;
+    }
+
+
     public function testInstanceOf()
     {
         $this->assertInstanceOf(FrobouSystemPermission::class, $this->perms);
