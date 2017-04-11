@@ -31,6 +31,7 @@ Usamos o pacote [frobou-db-connect](https://github.com/frobou/frobou-db-connect)
 Ao instanciar FrobouSystemPermission, todos os recursos necessários ficam disponíveis.
 
  - login($username, $password, $pass_in_plain = false)
+ - getUserList()
  - createUser(SystemUser $user)
  - updateUser(SystemUser $user, array $where)
  - deleteUser($username)

@@ -45,6 +45,17 @@ FROM system_user WHERE deleted = 0 AND active = 1 and username = :username";
         return null;
     }
 
+    public function getUserList(){
+        $query = "SELECT id, username, name, email, avatar, active, can_edit, can_edit, can_login, 
+can_use_web, can_use_api, system_group_id, user_type 
+FROM system_user WHERE deleted = 0 AND active = 1";
+        $list = $this->connection->select($query, $this->db_name);
+        if (!is_bool($list) && count($list) > 0) {
+            return $list;
+        }
+        return null;
+    }
+
     /**
      * @param SystemUser $user
      * @return mixed
