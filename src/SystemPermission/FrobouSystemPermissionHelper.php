@@ -65,7 +65,9 @@ WHERE ur.system_user_id = {$id} group by sr.name";
     protected function cryptPass(SystemUser $user)
     {
         $pass = $user->getPassword();
-        $user->setPassword(password_hash($user->getUsername() . PASSWORD_SALT . md5($pass), PASSWORD_DEFAULT));
+        if ($pass !== null){
+            $user->setPassword(password_hash($user->getUsername() . PASSWORD_SALT . md5($pass), PASSWORD_DEFAULT));
+        }
         return $user;
     }
 
