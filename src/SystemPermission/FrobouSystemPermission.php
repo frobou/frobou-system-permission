@@ -56,6 +56,15 @@ FROM system_user WHERE deleted = 0 AND active = 1";
         return null;
     }
 
+    public function getUserTypes(){
+        $query = "SELECT name, description FROM system_types";
+        $list = $this->connection->select($query, $this->db_name);
+        if (!is_bool($list) && count($list) > 0) {
+            return $list;
+        }
+        return null;
+    }
+
     /**
      * @param SystemUser $user
      * @return mixed

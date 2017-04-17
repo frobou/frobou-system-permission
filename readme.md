@@ -32,6 +32,7 @@ Ao instanciar FrobouSystemPermission, todos os recursos necessários ficam dispo
 
  - login($username, $password, $pass_in_plain = false)
  - getUserList()
+ - getUserTypes()
  - createUser(SystemUser $user)
  - updateUser(SystemUser $user, array $where)
  - deleteUser($username)
