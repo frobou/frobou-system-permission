@@ -37,6 +37,7 @@ Ao instanciar FrobouSystemPermission, todos os recursos necessários ficam dispo
  - deleteUser($username)
  - undeleteUser($username)
  - createGroup($name)
+ - getGroupList()
  - createResource($name, $permission)
  - registerGroupResource($username, $resourcename)
  - unregisterGroupResource($username, $resourcename)

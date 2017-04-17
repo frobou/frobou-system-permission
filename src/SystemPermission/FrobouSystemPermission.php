@@ -118,6 +118,16 @@ FROM system_user WHERE deleted = 0 AND active = 1";
      */
     public function createGroup($name)
     {
+        $query = 'SELECT group_name FROM system_group';
+        $list = $this->connection->select($query, $this->db_name);
+        return $list;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getGroupList()
+    {
         $params = [];
         $query = 'INSERT INTO system_group (group_name) VALUES (:name)';
         array_push($params, ['param' => ':name', 'value' => $name, 'type' => \PDO::PARAM_STR]);
