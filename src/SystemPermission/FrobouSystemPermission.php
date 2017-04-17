@@ -116,7 +116,7 @@ FROM system_user WHERE deleted = 0 AND active = 1";
      * @param $name
      * @return mixed
      */
-    public function createGroup($name)
+    public function getGroupList($name)
     {
         $query = 'SELECT group_name FROM system_group';
         $list = $this->connection->select($query, $this->db_name);
@@ -126,7 +126,7 @@ FROM system_user WHERE deleted = 0 AND active = 1";
     /**
      * @return mixed
      */
-    public function getGroupList()
+    public function createGroup($name)
     {
         $params = [];
         $query = 'INSERT INTO system_group (group_name) VALUES (:name)';
