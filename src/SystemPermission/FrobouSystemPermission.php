@@ -57,7 +57,7 @@ FROM system_user WHERE deleted = 0 AND active = 1";
     }
 
     public function getUserTypes(){
-        $query = "SELECT name, description FROM system_types";
+        $query = "SELECT cod, name, description FROM system_types";
         $list = $this->connection->select($query, $this->db_name);
         if (!is_bool($list) && count($list) > 0) {
             return $list;
@@ -127,7 +127,7 @@ FROM system_user WHERE deleted = 0 AND active = 1";
      */
     public function getGroupList($name)
     {
-        $query = 'SELECT group_name FROM system_group';
+        $query = 'SELECT id, group_name FROM system_group';
         $list = $this->connection->select($query, $this->db_name);
         return $list;
     }
