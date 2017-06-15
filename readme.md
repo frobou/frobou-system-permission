@@ -1,4 +1,5 @@
 ## Frobou System Permission ##
+[![SensioLabsInsight](https://insight.sensiolabs.com/projects/b94b0f67-c93d-4dbe-9ef8-5264ea91b884/small.png)](https://insight.sensiolabs.com/projects/b94b0f67-c93d-4dbe-9ef8-5264ea91b884)  
 
 Sistema de verificação de permissões de uso.
 
