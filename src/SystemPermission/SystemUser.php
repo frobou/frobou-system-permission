@@ -194,10 +194,13 @@ class SystemUser extends SystemUserHelper
         return $this;
     }
 
-    public function getCanEdit()
+    public function getCanEdit($as_bool = true)
     {
         if (trim($this->can_edit) == '') {
             return null;
+        }
+        if ($as_bool === true){
+            return $this->can_edit === 1;
         }
         return $this->can_edit;
     }
@@ -209,10 +212,13 @@ class SystemUser extends SystemUserHelper
         return $this;
     }
 
-    public function getCanLogin()
+    public function getCanLogin($as_bool = true)
     {
         if (trim($this->can_login) == '') {
             return null;
+        }
+        if ($as_bool === true){
+            return $this->can_login === 1;
         }
         return $this->can_login;
     }
@@ -224,10 +230,13 @@ class SystemUser extends SystemUserHelper
         return $this;
     }
 
-    public function getCanUseWeb()
+    public function getCanUseWeb($as_bool = true)
     {
         if (trim($this->can_use_web) == '') {
             return null;
+        }
+        if ($as_bool === true){
+            return $this->can_use_web === 1;
         }
         return $this->can_use_web;
     }
@@ -239,10 +248,13 @@ class SystemUser extends SystemUserHelper
         return $this;
     }
 
-    public function getCanUseApi()
+    public function getCanUseApi($as_bool = true)
     {
         if (trim($this->can_use_api) == '') {
             return null;
+        }
+        if ($as_bool === true){
+            return $this->can_use_api === 1;
         }
         return $this->can_use_api;
     }
