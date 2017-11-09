@@ -86,10 +86,10 @@ abstract class SystemUserHelper
     {
         $out = new \stdClass();
         if (is_bool($value)) {
-            $out->can_select = false;
+            $out->can_view = false;
             $value = 0;
         } else {
-            $out->can_select = true;
+            $out->can_view = true;
         }
         $bin = str_pad(decbin($value), 4, '0', STR_PAD_LEFT);
         $out->can_insert = boolval($bin[3]);
