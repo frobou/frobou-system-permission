@@ -24,7 +24,7 @@ class FrobouSystemPermissionHelper
         $query = "SELECT sr.name, sr.permission
 FROM group_resources gr
 INNER JOIN system_resources sr ON gr.system_resources_id = sr.id
-WHERE gr.system_group_id = {$id} group by sr.name";
+WHERE gr.system_group_id = {$id} group by sr.name, sr.permission";
         return $this->connection->select($query, $this->db_name);
     }
 
@@ -33,7 +33,7 @@ WHERE gr.system_group_id = {$id} group by sr.name";
         $query = "SELECT sr.name, sr.permission
 FROM user_resources ur
 INNER JOIN system_resources sr ON ur.system_resources_id = sr.id
-WHERE ur.system_user_id = {$id} group by sr.name";
+WHERE ur.system_user_id = {$id} group by sr.name, sr.permission";
         return $this->connection->select($query, $this->db_name);
     }
 
