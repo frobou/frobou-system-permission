@@ -37,6 +37,16 @@ WHERE ur.system_user_id = {$id} group by sr.name, sr.permission";
         return $this->connection->select($query, $this->db_name);
     }
 
+    protected function getMasterPerms()
+    {
+        if (!defined('MASTER_PERMISSION_VALUE')) {
+            defined('MASTER_PERMISSION_VALUE', 0);
+        }
+        $value = MASTER_PERMISSION_VALUE;
+        $query = "SELECT distinct(name), {$value} as permission FROM system_resources";
+        return $this->connection->select($query, $this->db_name);
+    }
+
     protected function getUser($data)
     {
         $user = new SystemUser();
@@ -47,6 +57,12 @@ WHERE ur.system_user_id = {$id} group by sr.name, sr.permission";
         }
         if (defined('MERGE_PERMISSIONS') && MERGE_PERMISSIONS === true) {
             $g_per = $this->getGroupPerms($data->id);
+            foreach ($g_per as $value) {
+                $perms[$value->name] = intval($value->permission);
+            }
+        }
+        if (defined('MASTER_PERMISSIONS') && MASTER_PERMISSIONS === true) {
+            $g_per = $this->getMasterPerms();
             foreach ($g_per as $value) {
                 $perms[$value->name] = intval($value->permission);
             }
